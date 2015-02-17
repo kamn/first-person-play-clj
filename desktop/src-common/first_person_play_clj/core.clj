@@ -4,6 +4,36 @@
             [play-clj.math :refer :all]
             [play-clj.ui :refer :all]))
 
+(def ^:const velocity 5)
+
+(defn calc-move-x [{:keys [delta-time] :as screen} forward?]
+  (let [cam-dir (direction screen)
+        cam-pos (position screen)
+        f? (if forward? 1 -1)
+        tmp (vector-3 (x cam-dir) (y cam-dir) (z cam-dir))]
+    (->
+      tmp
+      (.nor)
+      (.scl (float (* f? velocity delta-time)))
+      (.add cam-pos))))
+
+(defn calc-move-forward [screen]
+  (calc-move-x screen true))
+
+(defn calc-move-backward [screen]
+  (calc-move-x screen false))
+
+;;TODO: Better way of dealing with movement cases
+(defn process-input [screen]
+  (if (key-pressed? :w)
+    (let [f (calc-move-forward screen)]
+      (position! screen (x f) (y f) (z f))))
+  (if (key-pressed? :s)
+    (let [f (calc-move-backward screen)]
+      (position! screen (x f) (y f) (z f))))
+)
+
+
 (defscreen main-screen
   :on-show
   (fn [screen entities]
@@ -28,6 +58,7 @@
   :on-render
   (fn [screen entities]
     (clear! 1 1 1 1)
+    (process-input screen)
     (render! screen entities)))
 
 (defscreen text-screen
@@ -49,6 +80,7 @@
   :on-resize
   (fn [screen entities]
     (height! screen 300)))
+
 
 (defgame first-person-play-clj
   :on-create
