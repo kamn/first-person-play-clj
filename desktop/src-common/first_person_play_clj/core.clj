@@ -6,6 +6,20 @@
 
 (def ^:const velocity 5)
 
+(defn calc-move-strafe [{:keys [delta-time] :as screen} left?]
+  (let [cam-dir (direction screen)
+        cam-up (up screen)
+        cam-pos (position screen)
+        l? (if left? -1 1)
+        tmp (vector-3 (x cam-dir) (y cam-dir) (z cam-dir))]
+    (->
+      tmp
+      (.crs cam-up)
+      (.nor)
+      (.scl (float (* l? velocity delta-time)))
+      (.add cam-pos))))
+
+
 (defn calc-move-x [{:keys [delta-time] :as screen} forward?]
   (let [cam-dir (direction screen)
         cam-pos (position screen)
@@ -23,6 +37,14 @@
 (defn calc-move-backward [screen]
   (calc-move-x screen false))
 
+(defn calc-move-left [screen]
+  (calc-move-strafe screen true)
+)
+
+(defn calc-move-right [screen]
+  (calc-move-strafe screen false)
+)
+
 ;;TODO: Better way of dealing with movement cases
 (defn process-input [screen]
   (if (key-pressed? :w)
@@ -31,6 +53,13 @@
   (if (key-pressed? :s)
     (let [f (calc-move-backward screen)]
       (position! screen (x f) (y f) (z f))))
+  (if (key-pressed? :a)
+    (let [f (calc-move-left screen)]
+      (position! screen (x f) (y f) (z f))))
+  (if (key-pressed? :d)
+    (let [f (calc-move-right screen)]
+      (position! screen (x f) (y f) (z f))))
+
 )
 
 
