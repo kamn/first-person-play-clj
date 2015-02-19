@@ -31,6 +31,19 @@
       (.scl (float (* f? velocity delta-time)))
       (.add cam-pos))))
 
+(defn calc-move-z [{:keys [delta-time] :as screen} up?]
+  (let [cam-up (up screen)
+        cam-pos (position screen)
+        u? (if up? 1 -1)
+        tmp (vector-3 (x cam-up) (y cam-up) (z cam-up))]
+    (->
+      tmp
+      (.nor)
+      (.scl (float (* u? velocity delta-time)))
+      (.add cam-pos))))
+
+
+
 (defn calc-move-forward [screen]
   (calc-move-x screen true))
 
@@ -38,12 +51,17 @@
   (calc-move-x screen false))
 
 (defn calc-move-left [screen]
-  (calc-move-strafe screen true)
-)
+  (calc-move-strafe screen true))
 
 (defn calc-move-right [screen]
-  (calc-move-strafe screen false)
-)
+  (calc-move-strafe screen false))
+
+(defn calc-move-up [screen]
+  (calc-move-z screen true))
+
+(defn calc-move-down [screen]
+  (calc-move-z screen false))
+
 
 ;;TODO: Better way of dealing with movement cases
 (defn process-input [screen]
@@ -59,6 +77,13 @@
   (if (key-pressed? :d)
     (let [f (calc-move-right screen)]
       (position! screen (x f) (y f) (z f))))
+  (if (key-pressed? :q)
+    (let [f (calc-move-up screen)]
+      (position! screen (x f) (y f) (z f))))
+  (if (key-pressed? :e)
+    (let [f (calc-move-down screen)]
+      (position! screen (x f) (y f) (z f))))
+
 
 )
 
