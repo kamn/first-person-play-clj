@@ -5,6 +5,7 @@
             [play-clj.ui :refer :all]))
 
 (def ^:const velocity 5)
+(def ^:const degrees-per-pixel 0.1)
 
 (defn calc-move-strafe [{:keys [delta-time] :as screen} left?]
   (let [cam-dir (direction screen)
@@ -42,8 +43,6 @@
       (.scl (float (* u? velocity delta-time)))
       (.add cam-pos))))
 
-
-
 (defn calc-move-forward [screen]
   (calc-move-x screen true))
 
@@ -62,6 +61,29 @@
 (defn calc-move-down [screen]
   (calc-move-z screen false))
 
+
+(defn turn-fn [screen]
+    (let [dx (input! :get-delta-x)
+          dy (input! :get-delta-y)
+          rdx (float (* (- 0 dx) degrees-per-pixel))
+          rdy (float (* (- 0 dy) degrees-per-pixel))
+          cam-dir (direction screen)
+          cam-up (up screen)
+          tmp (vector-3 (x cam-dir) (y cam-dir) (z cam-dir))]
+       (println dx)
+       (println (* (- 0 dx) (float degrees-per-pixel)))
+       (println tmp)
+       ;;(println (.rotate tmp cam-up (* (- 0 dx) (float degrees-per-pixel))))
+       (println "-----")
+       (.rotate cam-dir cam-up rdx)
+       ;;(->
+       ;;  tmp
+       ;;  (.rotate cam-up rdx)
+       ;;  (.crs cam-up)
+       ;;  (.nor)
+       ;;  (.rotate cam-dir rdy)
+       ;;)
+       ))
 
 ;;TODO: Better way of dealing with movement cases
 (defn process-input [screen]
@@ -82,10 +104,7 @@
       (position! screen (x f) (y f) (z f))))
   (if (key-pressed? :e)
     (let [f (calc-move-down screen)]
-      (position! screen (x f) (y f) (z f))))
-
-
-)
+      (position! screen (x f) (y f) (z f)))))
 
 
 (defscreen main-screen
@@ -113,7 +132,34 @@
   (fn [screen entities]
     (clear! 1 1 1 1)
     (process-input screen)
-    (render! screen entities)))
+    (render! screen entities))
+
+  :on-mouse-moved
+  (fn [screen entities]
+    (print "Moved"))
+
+  :on-touch-dragged
+  (fn [screen entities]
+    "(let [dx (input! :get-delta-x)
+          dy (input! :get-delta-y)
+          cam-dir (direction screen)
+          cam-up (up screen)
+          tmp (vector-3 (cam-dir x) (cam-dir y) (cam-dir z))]
+       (->
+         tmp
+         (.rotate cam-up (float degrees-per-pixel))
+       )
+       (println "test")
+       (println dx)
+    )"
+    (let [new-dir (turn-fn screen)]
+      (cam-update! screen)
+      ;;(direction! screen (x new-dir) (y new-dir) (z new-dir))
+    )
+    ;;TODO: Get deltaX
+    ;;TODO: Get deltaY
+    ;;TODO: Check
+  ))
 
 (defscreen text-screen
   :on-show
