@@ -70,17 +70,8 @@
           cam-dir (direction screen)
           cam-up (up screen)
           tmp (vector-3 (x cam-dir) (y cam-dir) (z cam-dir))]
-       ;;(println (.rotate tmp cam-up (* (- 0 dx) (float degrees-per-pixel))))
        (.rotate cam-dir cam-up rdx)
-       (.rotate cam-dir (-> tmp (.crs cam-up) (.nor)) rdy)
-       ;;(->
-       ;;  tmp
-       ;;  (.rotate cam-up rdx)
-       ;;  (.crs cam-up)
-       ;;  (.nor)
-       ;;  (.rotate cam-dir rdy)
-       ;;)
-       ))
+       (.rotate cam-dir (-> tmp (.crs cam-up) (.nor)) rdy)))
 
 ;;TODO: Better way of dealing with movement cases
 (defn process-input [screen]
@@ -101,7 +92,8 @@
       (position! screen (x f) (y f) (z f))))
   (if (key-pressed? :e)
     (let [f (calc-move-down screen)]
-      (position! screen (x f) (y f) (z f)))))
+      (position! screen (x f) (y f) (z f))))
+  (if (key-pressed? :escape) (app! :exit)))
 
 
 (defscreen main-screen
@@ -117,6 +109,7 @@
                        (direction! 0 0 0)
                        (near! 0.1)
                        (far! 300)))
+    (input! :set-cursor-catched true)
     (let [attr (attribute! :color :create-diffuse (color :blue))
           model-mat (material :set attr)
           model-attrs (bit-or (usage :position) (usage :normal))
@@ -133,30 +126,13 @@
 
   :on-mouse-moved
   (fn [screen entities]
-    (print "Moved"))
+    (let [new-dir (turn-fn screen)]
+      (cam-update! screen)))
 
   :on-touch-dragged
   (fn [screen entities]
-    "(let [dx (input! :get-delta-x)
-          dy (input! :get-delta-y)
-          cam-dir (direction screen)
-          cam-up (up screen)
-          tmp (vector-3 (cam-dir x) (cam-dir y) (cam-dir z))]
-       (->
-         tmp
-         (.rotate cam-up (float degrees-per-pixel))
-       )
-       (println "test")
-       (println dx)
-    )"
     (let [new-dir (turn-fn screen)]
-      (cam-update! screen)
-      ;;(direction! screen (x new-dir) (y new-dir) (z new-dir))
-    )
-    ;;TODO: Get deltaX
-    ;;TODO: Get deltaY
-    ;;TODO: Check
-  ))
+      (cam-update! screen))))
 
 (defscreen text-screen
   :on-show
