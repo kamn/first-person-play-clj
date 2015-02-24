@@ -75,25 +75,13 @@
 
 ;;TODO: Better way of dealing with movement cases
 (defn process-input [screen]
-  (if (key-pressed? :w)
-    (let [f (calc-move-forward screen)]
-      (position! screen (x f) (y f) (z f))))
-  (if (key-pressed? :s)
-    (let [f (calc-move-backward screen)]
-      (position! screen (x f) (y f) (z f))))
-  (if (key-pressed? :a)
-    (let [f (calc-move-left screen)]
-      (position! screen (x f) (y f) (z f))))
-  (if (key-pressed? :d)
-    (let [f (calc-move-right screen)]
-      (position! screen (x f) (y f) (z f))))
-  (if (key-pressed? :q)
-    (let [f (calc-move-up screen)]
-      (position! screen (x f) (y f) (z f))))
-  (if (key-pressed? :e)
-    (let [f (calc-move-down screen)]
-      (position! screen (x f) (y f) (z f))))
-  (if (key-pressed? :escape) (app! :exit)))
+  (when (key-pressed? :w) (position! screen (calc-move-forward screen)))
+  (when (key-pressed? :s) (position! screen (calc-move-backward screen)))
+  (when (key-pressed? :a) (position! screen (calc-move-left screen)))
+  (when (key-pressed? :d) (position! screen (calc-move-right screen)))
+  (when (key-pressed? :q) (position! screen (calc-move-up screen)))
+  (when (key-pressed? :e) (position! screen (calc-move-down screen)))
+  (when (key-pressed? :escape) (app! :exit)))
 
 
 (defscreen main-screen
