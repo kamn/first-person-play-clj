@@ -70,12 +70,9 @@
           cam-dir (direction screen)
           cam-up (up screen)
           tmp (vector-3 (x cam-dir) (y cam-dir) (z cam-dir))]
-       (println dx)
-       (println (* (- 0 dx) (float degrees-per-pixel)))
-       (println tmp)
        ;;(println (.rotate tmp cam-up (* (- 0 dx) (float degrees-per-pixel))))
-       (println "-----")
        (.rotate cam-dir cam-up rdx)
+       (.rotate cam-dir (-> tmp (.crs cam-up) (.nor)) rdy)
        ;;(->
        ;;  tmp
        ;;  (.rotate cam-up rdx)
