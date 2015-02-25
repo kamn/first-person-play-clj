@@ -115,12 +115,12 @@
   :on-mouse-moved
   (fn [screen entities]
     (let [new-dir (turn-fn screen)]
-      (cam-update! screen)))
+      (camera-update! screen)))
 
   :on-touch-dragged
   (fn [screen entities]
     (let [new-dir (turn-fn screen)]
-      (cam-update! screen))))
+      (camera-update! screen))))
 
 (defscreen text-screen
   :on-show
