@@ -71,7 +71,8 @@
           cam-up (up screen)
           tmp (vector-3 (x cam-dir) (y cam-dir) (z cam-dir))]
        (.rotate cam-dir cam-up rdx)
-       (.rotate cam-dir (-> tmp (.crs cam-up) (.nor)) rdy)))
+       (.rotate cam-dir (-> tmp (.crs cam-up) (.nor)) rdy))
+       (.update (:camera screen)))
 
 ;;TODO: Better way of dealing with movement cases
 (defn process-input [screen]
@@ -114,13 +115,11 @@
 
   :on-mouse-moved
   (fn [screen entities]
-    (let [new-dir (turn-fn screen)]
-      (camera-update! screen)))
+    (turn-fn screen))
 
   :on-touch-dragged
   (fn [screen entities]
-    (let [new-dir (turn-fn screen)]
-      (camera-update! screen))))
+    (turn-fn screen)))
 
 (defscreen text-screen
   :on-show
